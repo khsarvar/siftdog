@@ -74,6 +74,9 @@ push a matching `vX.Y.Z` tag. `.github/workflows/release.yml` refuses mismatched
 publishes to PyPI (trusted publishing), ghcr.io, the MCP Registry (GitHub OIDC; ownership is
 checked via the `mcp-name:` comment in README.md) and GitHub Releases.
 
+The website (siftdog.com: landing page, blog, benchmark results, hosted waitlist) lives in the
+separate repo `khsarvar/siftdog-site`; this repo has no site files.
+
 ## Security invariant
 
 All outbound fetches of user-supplied URLs must go through `Fetcher`, which rejects non-http(s)
