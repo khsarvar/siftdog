@@ -1,4 +1,4 @@
-from sifthound.rank import best_chunks, bm25_scores, chunk, combine_scores
+from siftdog.rank import best_chunks, bm25_scores, chunk, combine_scores
 
 
 def test_bm25_prefers_matching_doc():

@@ -23,7 +23,7 @@ def run_mcp_stdio() -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the Sifthound API server.")
+    parser = argparse.ArgumentParser(description="Run the Siftdog API server.")
     parser.add_argument(
         "command",
         nargs="?",

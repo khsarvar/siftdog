@@ -1,4 +1,4 @@
-# Minimal SearXNG config for sifthound. Inherits SearXNG defaults; overrides what the API needs
+# Minimal SearXNG config for siftdog. Inherits SearXNG defaults; overrides what the API needs
 # (the JSON output format, off by default; no bot limiter for server-to-server use) and enables
 # more web engines.
 use_default_settings: true

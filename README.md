@@ -1,36 +1,37 @@
-# Sifthound — open-source, self-hosted Tavily alternative
+# Siftdog — open-source, self-hosted Tavily alternative
 
-[![CI](https://github.com/khsarvar/sifthound/actions/workflows/ci.yml/badge.svg)](https://github.com/khsarvar/sifthound/actions/workflows/ci.yml)
+[![CI](https://github.com/khsarvar/siftdog/actions/workflows/ci.yml/badge.svg)](https://github.com/khsarvar/siftdog/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/sifthound.svg)](https://pypi.org/project/sifthound/)
+[![PyPI](https://img.shields.io/pypi/v/siftdog.svg)](https://pypi.org/project/siftdog/)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 
-**Sifthound is an open-source, self-hosted web search API for AI agents and LLM apps, and a drop-in
+**Siftdog is an open-source, self-hosted web search API for AI agents and LLM apps, and a drop-in
 replacement for the [Tavily](https://tavily.com) API.** It serves the same `/search`,
 `/extract`, `/crawl` and `/map` endpoints with the same request and response shapes, so code
 written for Tavily (including the official Python SDK and the LangChain integration) works
 against your own server by changing only the base URL. It needs no search API key.
+Website: [siftdog.com](https://siftdog.com/).
 
-<!-- mcp-name: io.github.khsarvar/sifthound -->
+<!-- mcp-name: io.github.khsarvar/siftdog -->
 
 - **Search** through a [SearXNG](https://github.com/searxng/searxng) metasearch instance, with no search API keys
 - **Extraction** of clean markdown or text from web pages with [trafilatura](https://github.com/adbar/trafilatura)
 - **Ranking**: BM25 relevance blended with the upstream engine's order; `advanced` depth fetches each page and returns its most relevant chunks
 - **Answers** (`include_answer`) written by Claude from the retrieved results
 - **Crawling and site maps** with depth, breadth, limit and regex path/domain filters
-- **MCP server** for Claude Code, Claude Desktop, Cursor and other MCP clients, over HTTP at `/mcp` or stdio with `sifthound mcp`
+- **MCP server** for Claude Code, Claude Desktop, Cursor and other MCP clients, over HTTP at `/mcp` or stdio with `siftdog mcp`
 - **SSRF protection**: private and internal addresses are blocked, including via redirects and DNS rebinding
 - **MIT licensed**
 
 ## Use it as a drop-in Tavily replacement
 
-Point the official Tavily clients at your Sifthound server with `api_base_url`. The key can be any
+Point the official Tavily clients at your Siftdog server with `api_base_url`. The key can be any
 string when auth is disabled, or one of your `API_KEYS`.
 
 ```python
 from tavily import TavilyClient
 
-client = TavilyClient(api_key="your-sifthound-key", api_base_url="http://localhost:8000")
+client = TavilyClient(api_key="your-siftdog-key", api_base_url="http://localhost:8000")
 results = client.search("latest python release", search_depth="advanced", max_results=5)
 pages = client.extract(urls=["https://en.wikipedia.org/wiki/Okapi_BM25"])
 ```
@@ -41,7 +42,7 @@ LangChain, through [`langchain-tavily`](https://github.com/tavily-ai/langchain-t
 from langchain_tavily import TavilySearch
 
 search = TavilySearch(
-    max_results=5, tavily_api_key="your-sifthound-key", api_base_url="http://localhost:8000"
+    max_results=5, tavily_api_key="your-siftdog-key", api_base_url="http://localhost:8000"
 )
 search.invoke({"query": "what is BM25 ranking"})
 ```
@@ -56,7 +57,7 @@ Tested with `tavily-python` 0.8.4 (search, extract, crawl, map; sync and async) 
 The full stack, with a SearXNG instance for `/search`, using the published image:
 
 ```bash
-git clone https://github.com/khsarvar/sifthound && cd sifthound
+git clone https://github.com/khsarvar/siftdog && cd siftdog
 cp .env.example .env          # optional: set API_KEYS and ANTHROPIC_API_KEY
 docker compose up
 ```
@@ -74,7 +75,7 @@ http://localhost:8000/docs.
 ### Docker image only
 
 ```bash
-docker run -p 8000:8000 ghcr.io/khsarvar/sifthound
+docker run -p 8000:8000 ghcr.io/khsarvar/siftdog
 ```
 
 `/extract`, `/crawl` and `/map` work on their own. For `/search`, point it at a SearXNG
@@ -84,8 +85,8 @@ published for `linux/amd64` and `linux/arm64`, tagged `latest` and by version (`
 ### pip
 
 ```bash
-pip install sifthound
-SEARXNG_URL=http://your-searxng:8080 sifthound --port 8000
+pip install siftdog
+SEARXNG_URL=http://your-searxng:8080 siftdog --port 8000
 ```
 
 Configuration is read from environment variables or a `.env` file (see
@@ -93,21 +94,21 @@ Configuration is read from environment variables or a `.env` file (see
 
 ## Use with MCP clients (Claude, Cursor, ...)
 
-Sifthound is also an [MCP](https://modelcontextprotocol.io) server with four read-only tools:
-`sifthound_search`, `sifthound_extract`, `sifthound_crawl` and `sifthound_map`.
+Siftdog is also an [MCP](https://modelcontextprotocol.io) server with four read-only tools:
+`siftdog_search`, `siftdog_extract`, `siftdog_crawl` and `siftdog_map`.
 
-**Connect to a running Sifthound server** (Streamable HTTP at `/mcp`). With Claude Code:
+**Connect to a running Siftdog server** (Streamable HTTP at `/mcp`). With Claude Code:
 
 ```bash
-claude mcp add --transport http sifthound http://localhost:8000/mcp \
+claude mcp add --transport http siftdog http://localhost:8000/mcp \
   --header "Authorization: Bearer <key>"      # omit the header if API_KEYS is empty
 ```
 
 **Or run it locally over stdio** with [uv](https://docs.astral.sh/uv/), no server needed.
-`SEARXNG_URL` is only needed for `sifthound_search`:
+`SEARXNG_URL` is only needed for `siftdog_search`:
 
 ```bash
-claude mcp add sifthound -e SEARXNG_URL=http://your-searxng:8080 -- uvx sifthound mcp
+claude mcp add siftdog -e SEARXNG_URL=http://your-searxng:8080 -- uvx siftdog mcp
 ```
 
 Claude Desktop (`claude_desktop_config.json`), Cursor (`.cursor/mcp.json`) and most other clients
@@ -116,9 +117,9 @@ take the same command as JSON:
 ```json
 {
   "mcpServers": {
-    "sifthound": {
+    "siftdog": {
       "command": "uvx",
-      "args": ["sifthound", "mcp"],
+      "args": ["siftdog", "mcp"],
       "env": { "SEARXNG_URL": "http://your-searxng:8080" }
     }
   }
@@ -130,9 +131,9 @@ API keys work as for the REST API: send `Authorization: Bearer <key>`, or append
 prefer the header). The HTTP endpoint only answers requests addressed to `localhost` unless you
 list your hostname in `MCP_ALLOWED_HOSTS`.
 
-## Sifthound vs Tavily, Firecrawl and crw
+## Siftdog vs Tavily, Firecrawl and crw
 
-| | Sifthound | [Tavily](https://tavily.com) | [Firecrawl](https://github.com/firecrawl/firecrawl) | [crw](https://github.com/fastcrw/crw) |
+| | Siftdog | [Tavily](https://tavily.com) | [Firecrawl](https://github.com/firecrawl/firecrawl) | [crw](https://github.com/fastcrw/crw) |
 |---|---|---|---|---|
 | License | MIT | Proprietary (hosted service) | AGPL-3.0 | AGPL-3.0 |
 | Self-hosted | Yes | No | Yes | Yes (also a managed API) |
@@ -142,22 +143,22 @@ list your hostname in `MCP_ALLOWED_HOSTS`.
 | MCP server | Yes (HTTP and stdio) | Yes | Yes | Yes |
 | Language | Python | — | TypeScript | Rust |
 
-Measured results: [Sifthound vs Tavily search benchmark](https://sarvarkh.com/sifthound/benchmark.html)
+Measured results: [Siftdog vs Tavily search benchmark](https://siftdog.com/benchmark.html)
 (reproducible with [`bench/`](bench/)).
 
 **When to pick something else:** if you'd rather not run infrastructure, or you want Tavily's
 neural reranking, use hosted Tavily. If you need JavaScript-rendered pages or a scraping
-platform with more features, look at Firecrawl or crw. Sifthound is for teams that want the
+platform with more features, look at Firecrawl or crw. Siftdog is for teams that want the
 Tavily API on their own servers under a permissive license.
 
 ## FAQ
 
-### What is Sifthound?
-Sifthound is an open-source web search and extraction API for AI agents. It reproduces the Tavily
+### What is Siftdog?
+Siftdog is an open-source web search and extraction API for AI agents. It reproduces the Tavily
 API (`/search`, `/extract`, `/crawl`, `/map`) on infrastructure you run yourself, using SearXNG
 for search results, trafilatura for content extraction and BM25 for relevance ranking.
 
-### Is Sifthound a drop-in replacement for Tavily?
+### Is Siftdog a drop-in replacement for Tavily?
 For the four core endpoints, yes. The request and response fields match Tavily's, and the
 official `tavily-python` SDK and `langchain-tavily` work by setting `api_base_url`. The
 differences: relevance scores come from BM25 rather than a neural reranker, `instructions`
@@ -170,30 +171,30 @@ key is `ANTHROPIC_API_KEY`, used when a request sets `include_answer`.
 
 ### Does it work with LangChain?
 Yes, through the official `langchain-tavily` package. Pass `api_base_url` pointing at your
-Sifthound server, as in the example above.
+Siftdog server, as in the example above.
 
-### Does Sifthound have an MCP server?
-Yes. The API server exposes MCP over Streamable HTTP at `/mcp`, and `uvx sifthound mcp` runs it
+### Does Siftdog have an MCP server?
+Yes. The API server exposes MCP over Streamable HTTP at `/mcp`, and `uvx siftdog mcp` runs it
 over stdio for local clients such as Claude Desktop and Cursor. See
 [Use with MCP clients](#use-with-mcp-clients-claude-cursor-).
 
 ### Why does `/search` return 502 "failing engines"?
 SearXNG gets its results by querying public search engines (Brave, DuckDuckGo, Google and
 others), and those engines rate-limit or CAPTCHA an IP that sends many searches. When every
-engine is failing, Sifthound returns `502` with the engines and reasons, for example
+engine is failing, Siftdog returns `502` with the engines and reasons, for example
 `failing engines: brave (Suspended: too many requests), duckduckgo (CAPTCHA)`, rather than an
 empty result list your agent would mistake for "nothing found". Engines recover on their own,
 from minutes to about a day. If some engines still work, you get their results and the server
 logs which engines were down. To reduce blocking, enable more engines in
 `docker/searxng/settings.yml` and avoid bursts of identical searches.
 
-### Is it safe to expose Sifthound on a public server?
+### Is it safe to expose Siftdog on a public server?
 Set `API_KEYS` so only your clients can call it. `/extract` and `/crawl` fetch caller-supplied
-URLs, so Sifthound refuses private, loopback and link-local addresses, checked on every redirect and
+URLs, so Siftdog refuses private, loopback and link-local addresses, checked on every redirect and
 at connect time against the exact address used, which also stops DNS rebinding.
 
 ### Can I run it without Docker?
-Yes: `pip install sifthound`, then run `sifthound` with `SEARXNG_URL` pointing at any SearXNG
+Yes: `pip install siftdog`, then run `siftdog` with `SEARXNG_URL` pointing at any SearXNG
 instance with the JSON output format enabled. `/extract`, `/crawl` and `/map` work without
 SearXNG.
 
@@ -202,7 +203,7 @@ SearXNG.
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"
 docker compose up searxng -d    # uncomment its `ports:` in docker-compose.yml first
-.venv/bin/sifthound             # http://127.0.0.1:8000, docs at /docs
+.venv/bin/siftdog             # http://127.0.0.1:8000, docs at /docs
 .venv/bin/pytest                # offline test suite
 .venv/bin/ruff check . && .venv/bin/ruff format .
 ```
@@ -241,6 +242,6 @@ hostile multi-tenant deployments, also restrict egress at the network level.
 
 ## License
 
-Sifthound is released under the [MIT License](LICENSE). The "Sifthound" name is covered
+Siftdog is released under the [MIT License](LICENSE). The "Siftdog" name is covered
 separately by the [trademark policy](TRADEMARKS.md): use the code freely, but forks and hosted
 services need a different name.

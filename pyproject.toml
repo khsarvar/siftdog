@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sifthound"
-version = "0.2.1"
+name = "siftdog"
+version = "0.3.0"
 description = "Open-source, self-hosted Tavily alternative: a web search, extract and crawl API for AI agents."
 readme = "README.md"
 license = "MIT"
@@ -39,18 +39,18 @@ dependencies = [
 dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff==0.16.9"]
 
 [project.urls]
-Homepage = "https://sarvarkh.com/sifthound/"
-Source = "https://github.com/khsarvar/sifthound"
-Issues = "https://github.com/khsarvar/sifthound/issues"
+Homepage = "https://siftdog.com/"
+Source = "https://github.com/khsarvar/siftdog"
+Issues = "https://github.com/khsarvar/siftdog/issues"
 
 [project.scripts]
-sifthound = "sifthound.__main__:main"
+siftdog = "siftdog.__main__:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/sifthound"]
+packages = ["src/siftdog"]
 
 [tool.hatch.build.targets.sdist]
-include = ["src/sifthound", "tests", "README.md", "LICENSE", "pyproject.toml"]
+include = ["src/siftdog", "tests", "README.md", "LICENSE", "pyproject.toml"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

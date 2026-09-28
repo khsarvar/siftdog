@@ -4,13 +4,13 @@ from conftest import PAGES, FakeProvider, mock_transport
 from fastapi.testclient import TestClient
 from mcp.client import Client
 
-from sifthound.app import create_app
-from sifthound.config import Settings
-from sifthound.fetch import Fetcher
-from sifthound.mcp_server import build_mcp
-from sifthound.search import SearchService
+from siftdog.app import create_app
+from siftdog.config import Settings
+from siftdog.fetch import Fetcher
+from siftdog.mcp_server import build_mcp
+from siftdog.search import SearchService
 
-TOOLS = {"sifthound_search", "sifthound_extract", "sifthound_crawl", "sifthound_map"}
+TOOLS = {"siftdog_search", "siftdog_extract", "siftdog_crawl", "siftdog_map"}
 
 
 def settings(**overrides) -> Settings:
@@ -46,7 +46,7 @@ async def test_lists_read_only_tools(mcp_client):
 
 async def test_search_formats_results(mcp_client):
     async with mcp_client as client:
-        text, is_error = await call(client, "sifthound_search", {"query": "install example"})
+        text, is_error = await call(client, "siftdog_search", {"query": "install example"})
     assert not is_error
     assert text.startswith('# Search results for "install example"')
     assert "https://docs.example.com/install" in text and "relevance" in text
@@ -56,7 +56,7 @@ async def test_extract_reports_pages_and_failures(mcp_client):
     async with mcp_client as client:
         text, is_error = await call(
             client,
-            "sifthound_extract",
+            "siftdog_extract",
             {"urls": ["https://docs.example.com/install", "https://docs.example.com/missing"]},
         )
     assert not is_error
@@ -68,7 +68,7 @@ async def test_extract_truncates_long_pages(mcp_client):
     async with mcp_client as client:
         text, _ = await call(
             client,
-            "sifthound_extract",
+            "siftdog_extract",
             {"urls": ["https://docs.example.com/install"], "max_chars": 200},
         )
     assert "[... truncated at 200 characters]" in text
@@ -76,8 +76,8 @@ async def test_extract_truncates_long_pages(mcp_client):
 
 async def test_crawl_and_map(mcp_client):
     async with mcp_client as client:
-        crawled, _ = await call(client, "sifthound_crawl", {"url": "https://docs.example.com/"})
-        mapped, _ = await call(client, "sifthound_map", {"url": "https://docs.example.com/"})
+        crawled, _ = await call(client, "siftdog_crawl", {"url": "https://docs.example.com/"})
+        mapped, _ = await call(client, "siftdog_map", {"url": "https://docs.example.com/"})
     assert crawled.startswith("# Crawled") and "## https://docs.example.com/install" in crawled
     assert "- https://docs.example.com/usage" in mapped
     assert "other.org" not in mapped  # external links stay out unless allow_external
@@ -86,8 +86,8 @@ async def test_crawl_and_map(mcp_client):
 @pytest.mark.parametrize(
     ("tool", "args", "message"),
     [
-        ("sifthound_map", {"url": "https://docs.example.com/", "select_paths": ["("]}, "regex"),
-        ("sifthound_extract", {"urls": []}, "urls"),
+        ("siftdog_map", {"url": "https://docs.example.com/", "select_paths": ["("]}, "regex"),
+        ("siftdog_extract", {"urls": []}, "urls"),
     ],
 )
 async def test_bad_input_is_a_tool_error(mcp_client, tool, args, message):
@@ -120,7 +120,7 @@ def test_http_endpoint_initializes(hits):
     with http_client(hits) as client:
         resp = client.post("/mcp", json=INITIALIZE, headers=MCP_HEADERS)
     assert resp.status_code == 200
-    assert '"name":"sifthound"' in resp.text
+    assert '"name":"siftdog"' in resp.text
 
 
 @pytest.mark.parametrize(

@@ -38,7 +38,7 @@ UNAUTHORIZED = "Unauthorized: missing or invalid API key"
 @asynccontextmanager
 async def service_context(settings: Settings) -> AsyncIterator[SearchService]:
     """The production SearchService, with its HTTP clients open for the context's lifetime.
-    Used by the API server's lifespan and by `sifthound mcp` (stdio)."""
+    Used by the API server's lifespan and by `siftdog mcp` (stdio)."""
     # User-supplied URLs get their own client whose transport refuses non-public
     # addresses at connect time; SearXNG is often on a private network, so it can't share.
     fetch_transport = None if settings.allow_private_networks else public_only_transport()
@@ -94,7 +94,7 @@ def create_app(settings: Settings | None = None, service: SearchService | None =
                 async with service_context(settings) as app.state.service:
                     yield
 
-    app = FastAPI(title="sifthound", version=__version__, lifespan=lifespan)
+    app = FastAPI(title="siftdog", version=__version__, lifespan=lifespan)
     app.router.routes.append(Route("/mcp", RequireApiKey(mcp_http, settings.api_keys)))
 
     def svc(request: Request) -> SearchService:

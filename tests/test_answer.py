@@ -2,9 +2,9 @@ from types import SimpleNamespace
 
 import pytest
 
-from sifthound.answer import AnswerError, AnswerGenerator
-from sifthound.config import Settings
-from sifthound.models import SearchResult
+from siftdog.answer import AnswerError, AnswerGenerator
+from siftdog.config import Settings
+from siftdog.models import SearchResult
 
 
 def _generator(exc: Exception) -> AnswerGenerator:
