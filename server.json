@@ -1,20 +1,20 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.khsarvar/sifthound",
-  "title": "Sifthound",
+  "name": "io.github.khsarvar/siftdog",
+  "title": "Siftdog",
   "description": "Self-hosted, Tavily-compatible web search, extract, crawl and map tools for AI agents.",
   "repository": {
-    "url": "https://github.com/khsarvar/sifthound",
+    "url": "https://github.com/khsarvar/siftdog",
     "source": "github"
   },
-  "websiteUrl": "https://github.com/khsarvar/sifthound",
-  "version": "0.2.1",
+  "websiteUrl": "https://siftdog.com/",
+  "version": "0.3.0",
   "packages": [
     {
       "registryType": "pypi",
       "registryBaseUrl": "https://pypi.org",
-      "identifier": "sifthound",
-      "version": "0.2.1",
+      "identifier": "siftdog",
+      "version": "0.3.0",
       "transport": {
         "type": "stdio"
       },
@@ -27,7 +27,7 @@
       "environmentVariables": [
         {
           "name": "SEARXNG_URL",
-          "description": "URL of a SearXNG instance with JSON output enabled. Needed only for sifthound_search; extract, crawl and map work without it.",
+          "description": "URL of a SearXNG instance with JSON output enabled. Needed only for siftdog_search; extract, crawl and map work without it.",
           "isRequired": false
         }
       ]

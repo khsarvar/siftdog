@@ -1,7 +1,7 @@
-"""MCP (Model Context Protocol) server exposing Sifthound's search/extract/crawl/map as tools.
+"""MCP (Model Context Protocol) server exposing Siftdog's search/extract/crawl/map as tools.
 
 Served two ways from the same MCPServer: Streamable HTTP at /mcp on the API server (app.py)
-and stdio via `sifthound mcp` (__main__.py). Tools call the shared operations, so every fetch
+and stdio via `siftdog mcp` (__main__.py). Tools call the shared operations, so every fetch
 still goes through Fetcher and its SSRF checks.
 """
 
@@ -23,9 +23,9 @@ from .search import SearchService
 # Per-page content cap for tool output, so one long page can't flood the model's context.
 DEFAULT_MAX_CHARS = 4000
 
-INSTRUCTIONS = """Sifthound is a self-hosted web search and extraction service.
-Use sifthound_search to find sources for a question, sifthound_extract to read pages whose URLs
-you already have, sifthound_map to list a site's URLs, and sifthound_crawl to read many pages of
+INSTRUCTIONS = """Siftdog is a self-hosted web search and extraction service.
+Use siftdog_search to find sources for a question, siftdog_extract to read pages whose URLs
+you already have, siftdog_map to list a site's URLs, and siftdog_crawl to read many pages of
 one site. On large sites, map first and then extract or crawl only the paths you need."""
 
 READ_ONLY = ToolAnnotations(read_only_hint=True, open_world_hint=True)
@@ -60,15 +60,15 @@ def transport_security(settings: Settings) -> TransportSecuritySettings:
 
 def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> MCPServer:
     mcp = MCPServer(
-        name="sifthound",
-        title="Sifthound",
+        name="siftdog",
+        title="Siftdog",
         version=__version__,
         instructions=INSTRUCTIONS,
-        website_url="https://github.com/khsarvar/sifthound",
+        website_url="https://siftdog.com/",
     )
 
     @mcp.tool(annotations=READ_ONLY)
-    async def sifthound_search(
+    async def siftdog_search(
         query: Annotated[str, Field(min_length=1, description="The search query.")],
         max_results: Annotated[int, Field(ge=1, le=20, description="Number of results.")] = 5,
         search_depth: Annotated[
@@ -96,7 +96,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
         """Search the web and return ranked results with titles, URLs and relevant content.
 
         Use this to find sources for a question or to discover pages about a topic. If you
-        already know the URLs, use sifthound_extract instead."""
+        already know the URLs, use siftdog_extract instead."""
         req = SearchRequest(
             query=query,
             max_results=max_results,
@@ -122,7 +122,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
         return "\n".join(lines)
 
     @mcp.tool(annotations=READ_ONLY)
-    async def sifthound_extract(
+    async def siftdog_extract(
         urls: Annotated[
             list[str], Field(min_length=1, max_length=20, description="1 to 20 page URLs.")
         ],
@@ -133,7 +133,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
     ) -> str:
         """Fetch web pages and return their main content as clean markdown or text.
 
-        Use this when you already have the URLs, for example from sifthound_search results."""
+        Use this when you already have the URLs, for example from siftdog_search results."""
         try:
             resp = await run_extract(get_service(), ExtractRequest(urls=urls, format=format))
         except OperationError as e:
@@ -145,7 +145,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
         return "\n\n".join(parts)
 
     @mcp.tool(annotations=READ_ONLY)
-    async def sifthound_crawl(
+    async def siftdog_crawl(
         url: Annotated[str, Field(description="The page to start crawling from.")],
         max_depth: Annotated[
             int, Field(ge=1, le=5, description="How many links deep to follow from the start.")
@@ -160,7 +160,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
     ) -> str:
         """Crawl a website from a starting URL and return the content of the pages found.
 
-        Use this to read many pages of one site. For large sites, call sifthound_map first and
+        Use this to read many pages of one site. For large sites, call siftdog_map first and
         narrow the crawl with select_paths."""
         req = CrawlRequest(
             url=url,
@@ -180,7 +180,7 @@ def build_mcp(get_service: Callable[[], SearchService], settings: Settings) -> M
         return f"{header}\n\n{_pages(resp.results, max_chars)}"
 
     @mcp.tool(annotations=READ_ONLY)
-    async def sifthound_map(
+    async def siftdog_map(
         url: Annotated[str, Field(description="The site or page to map from.")],
         max_depth: Annotated[
             int, Field(ge=1, le=5, description="How many links deep to follow from the start.")

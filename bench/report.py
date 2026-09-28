@@ -71,7 +71,7 @@ def main(run_dir: Path) -> None:
     queries = {qid: q for qid, q in queries.items() if any(r["id"] == qid for r in rows)}
     services, depths = meta["services"], meta["depths"]
     out = [
-        "# Sifthound vs Tavily: search benchmark",
+        "# Siftdog vs Tavily: search benchmark",
         "",
         f"Run {meta['started_utc']} · {meta['queries']} queries · max_results "
         f"{meta['max_results']} · same `tavily-python` client for both, only the base URL "
@@ -126,7 +126,7 @@ def main(run_dir: Path) -> None:
     out += ["## Summary", "", summary_header, "|---" * (1 + len(depths) * len(services)) + "|"]
     out += [f"| {labels[k]} | " + " | ".join(v) + " |" for k, v in lines.items()]
 
-    if {"sifthound", "tavily"} <= set(services):
+    if {"siftdog", "tavily"} <= set(services):
         out += ["", "## Overlap between the two services", ""]
         out += [
             "| Depth | Same URLs (median Jaccard) | Same domains (median Jaccard) |",
@@ -136,7 +136,7 @@ def main(run_dir: Path) -> None:
             u, d = [], []
             for qid in queries:
                 pair = by[(depth, qid)]
-                a, b = pair.get("sifthound"), pair.get("tavily")
+                a, b = pair.get("siftdog"), pair.get("tavily")
                 if not a or not b or a["error"] or b["error"]:
                     continue
                 ju = jaccard({norm_url(r["url"]) for r in a["results"]},
@@ -177,7 +177,7 @@ def main(run_dir: Path) -> None:
     out += [
         "",
         "Latency is measured from the benchmark machine and includes the network path to each "
-        "service: Sifthound ran locally, Tavily over the internet. Sifthound's cost excludes the "
+        "service: Siftdog ran locally, Tavily over the internet. Siftdog's cost excludes the "
         "server it runs on. Content checks are case-insensitive substring matches on titles and "
         "content.",
     ]

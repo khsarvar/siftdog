@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Sifthound is an open-source, self-hostable alternative to the Tavily API: a FastAPI service exposing
+Siftdog is an open-source, self-hostable alternative to the Tavily API: a FastAPI service exposing
 `/search`, `/extract`, `/crawl`, `/map` with **Tavily-compatible request/response shapes**
-(`src/sifthound/models.py`). Compatibility is the product requirement — don't rename fields or
+(`src/siftdog/models.py`). Compatibility is the product requirement — don't rename fields or
 change response shapes; add new behavior as optional fields instead. Errors are returned as
 `HTTPException(status, detail={"error": ...})`; keep that shape consistent across endpoints.
 
@@ -17,8 +17,8 @@ python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"   # setup
 .venv/bin/pytest                                   # all tests (offline, <1s)
 .venv/bin/pytest tests/test_api.py::test_extract   # single test
 .venv/bin/ruff check . && .venv/bin/ruff format .  # lint + format (line length 100)
-.venv/bin/sifthound --port 8000                    # run server; OpenAPI docs at /docs, MCP at /mcp
-.venv/bin/sifthound mcp                            # MCP over stdio
+.venv/bin/siftdog --port 8000                    # run server; OpenAPI docs at /docs, MCP at /mcp
+.venv/bin/siftdog mcp                            # MCP over stdio
 docker compose up --build                          # API + SearXNG
 ```
 
@@ -56,7 +56,7 @@ by the REST handlers in `app.py` and the MCP tools in `mcp_server.py`. Operation
 
 MCP (`mcp_server.build_mcp`, SDK v2 `MCPServer`) is served two ways: Streamable HTTP mounted at
 `/mcp` in `create_app`, behind `RequireApiKey` (same `API_KEYS`, Bearer or `?api_key=`) and a
-Host allowlist (`MCP_ALLOWED_HOSTS` + localhost, else 421); and stdio via `sifthound mcp`
+Host allowlist (`MCP_ALLOWED_HOSTS` + localhost, else 421); and stdio via `siftdog mcp`
 (`__main__.py`). Mounted, the MCP app's own lifespan never runs, so `create_app`'s lifespan must
 enter `mcp.session_manager.run()`. In stdio mode stdout is the protocol: log to stderr only.
 

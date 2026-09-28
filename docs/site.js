@@ -1,4 +1,4 @@
-// Shared script for the Sifthound project site: adds a copy button to every code block.
+// Shared script for the Siftdog project site: adds a copy button to every code block.
 // Pages work without it; the buttons are an enhancement.
 const icon = (paths) =>
   `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" ` +

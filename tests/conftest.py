@@ -2,11 +2,11 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from sifthound.app import create_app
-from sifthound.config import Settings
-from sifthound.fetch import Fetcher
-from sifthound.providers import Hit
-from sifthound.search import SearchService
+from siftdog.app import create_app
+from siftdog.config import Settings
+from siftdog.fetch import Fetcher
+from siftdog.providers import Hit
+from siftdog.search import SearchService
 
 PAGES = {
     "https://docs.example.com/": """<html><head><title>Example Docs</title></head><body>

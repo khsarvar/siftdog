@@ -1,4 +1,4 @@
-"""Run the Sifthound vs Tavily search benchmark.
+"""Run the Siftdog vs Tavily search benchmark.
 
 Both services are called with the official tavily-python client and identical arguments;
 only the base URL differs. Queries alternate which service goes first, and every request is
@@ -6,7 +6,7 @@ timed from the client side.
 
     pip install -r bench/requirements.txt
     TAVILY_API_KEY=tvly-... python bench/run.py            # both services
-    python bench/run.py --services sifthound               # Sifthound only (no key needed)
+    python bench/run.py --services siftdog               # Siftdog only (no key needed)
 
 Raw responses (third-party web content) are written to bench/results/<timestamp>/, which is
 git-ignored. Run bench/report.py on that directory to compute the published metrics.
@@ -28,16 +28,16 @@ def load_queries(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
-def clients(services: list[str], sifthound_url: str, sifthound_key: str) -> dict[str, TavilyClient]:
+def clients(services: list[str], siftdog_url: str, siftdog_key: str) -> dict[str, TavilyClient]:
     out = {}
     for name in services:  # keep the given order; it's the report's column order
         if name == "tavily":
             key = os.environ.get("TAVILY_API_KEY")
             if not key:
-                raise SystemExit("TAVILY_API_KEY is not set (or pass --services sifthound)")
+                raise SystemExit("TAVILY_API_KEY is not set (or pass --services siftdog)")
             out["tavily"] = TavilyClient(api_key=key)
-        elif name == "sifthound":
-            out["sifthound"] = TavilyClient(api_key=sifthound_key, api_base_url=sifthound_url)
+        elif name == "siftdog":
+            out["siftdog"] = TavilyClient(api_key=siftdog_key, api_base_url=siftdog_url)
         else:
             raise SystemExit(f"unknown service: {name}")
     return out
@@ -73,18 +73,18 @@ def search(client: TavilyClient, q: dict, depth: str, max_results: int) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--services", nargs="+", default=["sifthound", "tavily"])
+    parser.add_argument("--services", nargs="+", default=["siftdog", "tavily"])
     parser.add_argument("--depths", nargs="+", default=["basic", "advanced"])
     parser.add_argument("--max-results", type=int, default=5)
     parser.add_argument("--queries", type=Path, default=HERE / "queries.jsonl")
-    parser.add_argument("--sifthound-url", default="http://localhost:8000")
-    parser.add_argument("--sifthound-key", default=os.environ.get("SIFTHOUND_API_KEY", "none"))
+    parser.add_argument("--siftdog-url", default="http://localhost:8000")
+    parser.add_argument("--siftdog-key", default=os.environ.get("SIFTDOG_API_KEY", "none"))
     parser.add_argument("--delay", type=float, default=1.0, help="seconds between requests")
     parser.add_argument("--limit", type=int, help="only the first N queries (for a dry run)")
     args = parser.parse_args()
 
     queries = load_queries(args.queries)[: args.limit]
-    services = clients(args.services, args.sifthound_url, args.sifthound_key)
+    services = clients(args.services, args.siftdog_url, args.siftdog_key)
     out_dir = HERE / "results" / datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     out_dir.mkdir(parents=True)
     (out_dir / "meta.json").write_text(
@@ -95,7 +95,7 @@ def main() -> None:
                 "depths": args.depths,
                 "max_results": args.max_results,
                 "queries": len(queries),
-                "sifthound_url": args.sifthound_url,
+                "siftdog_url": args.siftdog_url,
             },
             indent=2,
         )

@@ -1,4 +1,4 @@
-/* Shared styles for the Sifthound project site (docs/). Every page links this file and site.js
+/* Shared styles for the Siftdog project site (docs/). Every page links this file and site.js
    and repeats the same <nav class="site-nav"> block; to add a page, add one link to each nav. */
 
 :root {

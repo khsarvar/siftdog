@@ -5,11 +5,11 @@ import pytest
 from conftest import mock_transport
 from fastapi.testclient import TestClient
 
-from sifthound.app import create_app
-from sifthound.config import Settings
-from sifthound.fetch import Fetcher
-from sifthound.providers import ProviderError, SearxngProvider
-from sifthound.search import SearchService
+from siftdog.app import create_app
+from siftdog.config import Settings
+from siftdog.fetch import Fetcher
+from siftdog.providers import ProviderError, SearxngProvider
+from siftdog.search import SearchService
 
 BLOCKED = [["brave", "Suspended: too many requests"], ["duckduckgo", "Suspended: access denied"]]
 
@@ -44,7 +44,7 @@ async def test_partial_failure_returns_results_and_logs(caplog):
     provider = searxng(
         {1: {"results": [result(i) for i in range(6)], "unresponsive_engines": BLOCKED[:1]}}
     )
-    with caplog.at_level(logging.WARNING, logger="sifthound.providers"):
+    with caplog.at_level(logging.WARNING, logger="siftdog.providers"):
         hits = await search(provider, query="private-query-text")
     assert len(hits) == 6
     assert "brave (Suspended: too many requests)" in caplog.text
@@ -58,7 +58,7 @@ async def test_failure_on_a_later_page_keeps_earlier_results(caplog):
             2: {"results": [], "unresponsive_engines": BLOCKED},
         }
     )
-    with caplog.at_level(logging.WARNING, logger="sifthound.providers"):
+    with caplog.at_level(logging.WARNING, logger="siftdog.providers"):
         hits = await search(provider)
     assert [h.url for h in hits] == ["https://site1.example/", "https://site2.example/"]
     assert "duckduckgo" in caplog.text
