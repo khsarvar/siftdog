@@ -6,3 +6,6 @@ __pycache__/
 dist/
 .env
 bench/results/
+
+# Claude Code instructions: local only (may reference private repos)
+CLAUDE.md
