@@ -5,12 +5,13 @@
 [![PyPI](https://img.shields.io/pypi/v/siftdog.svg)](https://pypi.org/project/siftdog/)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 
+**[Website](https://siftdog.com/) · [Benchmark](https://siftdog.com/benchmark/) · [Blog](https://siftdog.com/blog/) · [Hosted waitlist](https://siftdog.com/hosted/)**
+
 **Siftdog is an open-source, self-hosted web search API for AI agents and LLM apps, and a drop-in
 replacement for the [Tavily](https://tavily.com) API.** It serves the same `/search`,
 `/extract`, `/crawl` and `/map` endpoints with the same request and response shapes, so code
 written for Tavily (including the official Python SDK and the LangChain integration) works
 against your own server by changing only the base URL. It needs no search API key.
-Website: [siftdog.com](https://siftdog.com/).
 
 <!-- mcp-name: io.github.khsarvar/siftdog -->
 
@@ -143,7 +144,7 @@ list your hostname in `MCP_ALLOWED_HOSTS`.
 | MCP server | Yes (HTTP and stdio) | Yes | Yes | Yes |
 | Language | Python | — | TypeScript | Rust |
 
-Measured results: [Siftdog vs Tavily search benchmark](https://siftdog.com/benchmark.html)
+Measured results: [Siftdog vs Tavily search benchmark](https://siftdog.com/benchmark/)
 (reproducible with [`bench/`](bench/)).
 
 **When to pick something else:** if you'd rather not run infrastructure, or you want Tavily's
